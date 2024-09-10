@@ -1,0 +1,6 @@
+*.tfstate
+*.tfstate.*
+# Ignore sensitive files
+*.pem
+*.key
+*.pub
