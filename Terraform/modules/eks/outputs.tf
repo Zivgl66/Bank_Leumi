@@ -14,6 +14,6 @@ output "eks_node_group_name" {
   value = aws_eks_node_group.eks_node_group.id
 }
 
-output "vpc_cni_addon_status" {
-  value = aws_eks_addon.vpc_cni.status
-}
+# output "vpc_cni_addon_status" {
+#   value = aws_eks_addon.vpc_cni.status
+# }

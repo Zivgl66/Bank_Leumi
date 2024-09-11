@@ -43,23 +43,23 @@ module "security_groups" {
   web_sg_name = var.web_sg_name
 }
 
-module "ec2_instances" {
-  source = "../modules/instance"
-  instances = {
-    instance_1 = {
-      ami           = var.instances.instance_1.ami
-      name          = var.instances.instance_1.name
-      instance_type = var.instances.instance_1.instance_type
-      subnet_id     = element(module.subnets.private_subnet_ids, 0) 
-    }
-    instance_2 = {
-      ami           = var.instances.instance_2.ami
-      name          = var.instances.instance_2.name
-      instance_type = var.instances.instance_2.instance_type
-      subnet_id     = element(module.subnets.private_subnet_ids, 0)  
-    }
-  }
-}
+# module "ec2_instances" {
+#   source = "../modules/instance"
+#   instances = {
+#     instance_1 = {
+#       ami           = var.instances.instance_1.ami
+#       name          = var.instances.instance_1.name
+#       instance_type = var.instances.instance_1.instance_type
+#       subnet_id     = element(module.subnets.private_subnet_ids, 0) 
+#     }
+#     instance_2 = {
+#       ami           = var.instances.instance_2.ami
+#       name          = var.instances.instance_2.name
+#       instance_type = var.instances.instance_2.instance_type
+#       subnet_id     = element(module.subnets.private_subnet_ids, 0)  
+#     }
+#   }
+# }
 
 module "eks" {
   source                   = "../modules/eks"

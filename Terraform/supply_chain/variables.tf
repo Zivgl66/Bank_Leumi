@@ -58,15 +58,15 @@ variable "web_sg_name" {
   type        = string
 }
 
-variable "instances" {
-  description = "A map of instances with AMI IDs, instance types, subnets, and instance names"
-  type = map(object({
-    ami           = string
-    name          = string
-    instance_type = string
-    subnet_id     = string
-  }))
-}
+# variable "instances" {
+#   description = "A map of instances with AMI IDs, instance types, subnets, and instance names"
+#   type = map(object({
+#     ami           = string
+#     name          = string
+#     instance_type = string
+#     subnet_id     = string
+#   }))
+# }
 variable "eks_cluster_role_name" {
   description = "Name for the IAM role of the EKS cluster"
   type        = string

@@ -102,9 +102,9 @@ resource "aws_eks_node_group" "eks_node_group" {
   subnet_ids      = var.private_subnet_ids
 
   scaling_config {
-    desired_size = 3
-    max_size     = 10
-    min_size     = 3
+    desired_size = 1
+    max_size     = 1
+    min_size     = 1
   }
 
   instance_types = ["t3.small"]
@@ -125,7 +125,7 @@ resource "aws_eks_node_group" "eks_node_group" {
 
   lifecycle {
     ignore_changes = [
-      tags["kubernetes.io/cluster/${var.cluster_name}"]
+      tags
     ]
   }
 
@@ -136,3 +136,94 @@ resource "aws_eks_node_group" "eks_node_group" {
     aws_iam_role_policy_attachment.ec2_container_registry_read_only,
   ]
 }
+
+# ArgoCD deployment:
+
+data "aws_eks_cluster" "default" {
+  name = aws_eks_cluster.eks_cluster.name
+}
+        
+provider "kubernetes" {
+  host                   = data.aws_eks_cluster.default.endpoint 
+    
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.default.certificate_authority[0].data) 
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1" 
+    args = ["eks", "get-token", "--cluster-name", aws_eks_cluster.eks_cluster.name] 
+    command     = "aws"
+  }
+}
+    
+provider "helm" {
+  kubernetes {
+    host                   = data.aws_eks_cluster.default.endpoint 
+    cluster_ca_certificate = base64decode(data.aws_eks_cluster.default.certificate_authority[0].data) 
+    exec {
+      api_version = "client.authentication.k8s.io/v1beta1" 
+      args = ["eks", "get-token", "--cluster-name", aws_eks_cluster.eks_cluster.name] 
+      command     = "aws" 
+    }
+  } 
+}
+    
+module "helm" {
+  depends_on = [aws_eks_node_group.eks_node_group]
+  source = "./helm"
+  eks_cluster_name = aws_eks_cluster.eks_cluster.name
+}
+
+
+
+# argocd delpoyement to the cluster:
+
+# data "aws_eks_cluster" "eks_cluster" {
+#   name = aws_eks_cluster.eks_cluster.name
+# }
+
+# data "aws_eks_cluster_auth" "eks_auth" {
+#   name = aws_eks_cluster.eks_cluster.name
+# }
+
+# data "kubernetes_namespace" "default" {
+#   metadata {
+#     name = "default"
+#   }
+# }
+
+
+# provider "kubernetes" {
+#   host                   = data.aws_eks_cluster.eks_cluster.endpoint
+#   cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks_cluster.certificate_authority[0].data)
+#   token                  = data.aws_eks_cluster_auth.eks_auth.token
+
+# }
+
+# resource "helm_release" "argocd" {
+#  depends_on = [aws_eks_node_group.eks_node_group]
+#  name       = "argocd"
+#  repository = "https://argoproj.github.io/argo-helm"
+#  chart      = "argo-cd"
+#  version    = "4.5.2"
+
+#  namespace = "argocd"
+
+#  create_namespace = true
+
+#  set {
+#    name  = "server.service.type"
+#    value = "LoadBalancer"
+#  }
+
+#  set {
+#    name  = "server.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-type"
+#    value = "nlb"
+#  }
+# }
+
+
+# data "kubernetes_service" "argocd_server" {
+#  metadata {
+#    name      = "argocd-server"
+#    namespace = helm_release.argocd.namespace
+#  }
+# }

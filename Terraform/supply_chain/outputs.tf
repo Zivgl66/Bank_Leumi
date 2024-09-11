@@ -30,15 +30,15 @@ output "web_security_group_id" {
   value = module.security_groups.web_security_group_id
 }
 
-output "instance_ids" {
-  description = "The IDs of the EC2 instances"
-  value       = { for k, v in aws_instance.ec2_instance : k => v.id }
-}
+# output "instance_ids" {
+#   description = "The IDs of the EC2 instances"
+#   value       = { for k, v in aws_instance.ec2_instance : k => v.id }
+# }
 
-output "private_ips" {
-  description = "The private IPs of the EC2 instances"
-  value       = { for k, v in aws_instance.ec2_instance : k => v.private_ip }
-}
+# output "private_ips" {
+#   description = "The private IPs of the EC2 instances"
+#   value       = { for k, v in aws_instance.ec2_instance : k => v.private_ip }
+# }
 
 output "eks_cluster_id" {
   value = module.eks.eks_cluster_id

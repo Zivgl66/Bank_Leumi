@@ -1,5 +1,12 @@
+
+# Terraform ignore:
 *.tfstate
 *.tfstate.*
+*.tfplan
+*.backup
+.terraform/
+*/.terraform/
+
 # Ignore sensitive files
 *.pem
 *.key
