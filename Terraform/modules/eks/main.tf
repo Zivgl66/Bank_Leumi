@@ -139,14 +139,14 @@ resource "aws_eks_node_group" "eks_node_group" {
 
 # ArgoCD deployment:
 
-data "aws_eks_cluster" "default" {
+data "aws_eks_cluster" "eks_cluster" {
   name = aws_eks_cluster.eks_cluster.name
 }
         
 provider "kubernetes" {
-  host                   = data.aws_eks_cluster.default.endpoint 
+  host                   = data.aws_eks_cluster.eks_cluster.endpoint 
     
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.default.certificate_authority[0].data) 
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks_cluster.certificate_authority[0].data) 
   exec {
     api_version = "client.authentication.k8s.io/v1beta1" 
     args = ["eks", "get-token", "--cluster-name", aws_eks_cluster.eks_cluster.name] 
@@ -156,8 +156,8 @@ provider "kubernetes" {
     
 provider "helm" {
   kubernetes {
-    host                   = data.aws_eks_cluster.default.endpoint 
-    cluster_ca_certificate = base64decode(data.aws_eks_cluster.default.certificate_authority[0].data) 
+    host                   = data.aws_eks_cluster.eks_cluster.endpoint 
+    cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks_cluster.certificate_authority[0].data) 
     exec {
       api_version = "client.authentication.k8s.io/v1beta1" 
       args = ["eks", "get-token", "--cluster-name", aws_eks_cluster.eks_cluster.name] 
