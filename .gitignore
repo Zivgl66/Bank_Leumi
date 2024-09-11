@@ -6,6 +6,7 @@
 *.backup
 .terraform/
 */.terraform/
+*.terraform.lock.hcl
 
 # Ignore sensitive files
 *.pem
