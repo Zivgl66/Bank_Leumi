@@ -17,9 +17,8 @@ resource "aws_lb_target_group" "private_targets" {
   vpc_id   = var.vpc_id
 
   health_check {
-    protocol            = "TCP"
+    protocol            = "tcp"
     interval            = 30
-    path                = "/"
     timeout             = 5
     unhealthy_threshold = 3
     healthy_threshold   = 3
