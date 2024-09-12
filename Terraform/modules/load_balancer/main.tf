@@ -1,7 +1,7 @@
 resource "aws_lb" "application_lb" {
   name               = var.lb_name
   internal           = false
-  load_balancer_type = "application"
+  load_balancer_type = "network"
   security_groups    = [var.lb_security_group_id]
   subnets            = var.public_subnet_ids
 
@@ -13,10 +13,11 @@ resource "aws_lb" "application_lb" {
 resource "aws_lb_target_group" "private_targets" {
   name     = var.target_group_name
   port     = 80
-  protocol = "HTTP"
+  protocol = "TCP"
   vpc_id   = var.vpc_id
 
   health_check {
+    protocol            = "HTTP"
     interval            = 30
     path                = "/"
     timeout             = 5
@@ -29,10 +30,10 @@ resource "aws_lb_target_group" "private_targets" {
   }
 }
 
-resource "aws_lb_listener" "http" {
+resource "aws_lb_listener" "tcp" {
   load_balancer_arn = aws_lb.application_lb.arn
   port              = 80
-  protocol          = "HTTP"
+  protocol          = "TCP"
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.private_targets.arn

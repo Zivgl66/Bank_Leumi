@@ -53,21 +53,41 @@ variable "private_route_table_name" {
   type        = string
 }
 
-variable "web_sg_name" {
-  description = "Name tag for the web security group"
+variable "apache_sg_name" {
+  description = "The name of the security group for the Apache instance"
   type        = string
 }
 
-# variable "instances" {
-#   description = "A map of instances with AMI IDs, instance types, subnets, and instance names"
-#   type = map(object({
-#     ami           = string
-#     name          = string
-#     instance_type = string
-#     subnet_id     = string
-#   }))
-# }
+variable "allowed_ip" {
+  description = "The IP allowed to access the Apache server (CIDR format)"
+  type        = string
+}
 
+variable "apache_http_port" {
+  description = "Port to expose Apache HTTP"
+  type        = number
+  default     = 80
+}
+
+variable "apache_ami" {
+  description = "The AMI ID for the Apache server instance"
+  type        = string
+}
+
+variable "apache_instance_name" {
+  description = "The name of the Apache EC2 instance"
+  type        = string
+}
+
+variable "apache_instance_type" {
+  description = "The EC2 instance type for the Apache server"
+  type        = string
+}
+
+variable "key_name" {
+  description = "The key name for the instance"
+  type        = string
+}
 variable "eks_cluster_role_name" {
   description = "Name for the IAM role of the EKS cluster"
   type        = string
