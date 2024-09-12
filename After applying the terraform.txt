@@ -1,0 +1,43 @@
+# After applying the terraform and running the pipeline. you can deploy the app using the kubectl to connect to the cluster:
+$ aws eks update-kubeconfig --region region-code --name my-cluster
+
+# After logging into the cluster, we need to login to argocd, To get argo initial paassword:
+$ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+$ argocd login <argocd-server-url> --username admin --password <password> --insecure
+
+# If the cluster in not connected properly, use context to connect it:
+$ kubectl config get-contexts
+$ argocd cluster add <your-eks-context>
+$ argocd cluster list
+
+
+# Install nginx ingress controller:
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/aws/deploy.yaml
+
+# Create an a tls certificate locally:
+$ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=example.com/O=example"
+$ kubectl create secret tls flask-tls --cert=tls.crt --key=tls.key -n python-app
+
+# Apply the service for the python app and the ingress manifests:
+$ kubectl apply -f app-service.yaml
+$ kubectl apply -f ingress.yaml
+
+
+# For any problem check the logs of the ingress service:
+$ kubectl logs -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx
+$ kubectl get ingress -n python-app
+$ kubectl describe ingress python-app-ingress -n python-app
+$ kubectl get service python-app-service -n python-app
+$ kubectl describe service python-app-service -n python-app
+$ kubectl get pods -n python-app --show-labels
+$ kubectl get ingressclass
+
+
+
+
+
+
+
+
+
+
