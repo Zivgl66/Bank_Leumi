@@ -58,6 +58,11 @@ variable "apache_sg_name" {
   type        = string
 }
 
+variable "lb_sg_name" {
+  description = "The name of the security group for the Load Balancer"
+  type        = string
+}
+
 variable "allowed_ip" {
   description = "The IP allowed to access the Apache server (CIDR format)"
   type        = string
@@ -108,10 +113,10 @@ variable "node_group_name" {
   type        = string
 }
 
-variable "private_instance_ids" {
-  description = "List of private instance IDs to attach to the load balancer target group"
-  type        = list(string)
-}
+# variable "private_instance_ids" {
+#   description = "List of private instance IDs to attach to the load balancer target group"
+#   type        = list(string)
+# }
 
 variable "lb_name" {
   description = "Name of the load balancer"

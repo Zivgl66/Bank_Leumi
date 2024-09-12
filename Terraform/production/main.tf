@@ -62,6 +62,37 @@ module "security_groups" {
   ]
 }
 
+# Security group for the Load Balancer to allow HTTP and HTTPS from everywhere
+module "lb_security_group" {
+  source              = "../modules/security_groups"
+  vpc_id              = module.vpc.vpc_id
+  aws_sg_dynamic_name = var.lb_sg_name
+
+  ingress_rules = [
+    {
+      from_port   = 80
+      to_port     = 80
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]  
+    },
+    {
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"] 
+    }
+  ]
+
+  egress_rules = [
+    {
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_blocks = ["0.0.0.0/0"] 
+    }
+  ]
+}
+
 module "ec2_instances" {
   source = "../modules/instance"
   
@@ -100,12 +131,32 @@ module "eks" {
   private_subnet_ids       = module.subnets.private_subnet_ids
 }
 
+# Get the instance IDs from the Auto Scaling Group
+data "aws_autoscaling_group" "eks_node_group" {
+  name = module.eks.node_group_asg_name
+}
+
+# Get the EC2 instances in the Auto Scaling Group
+data "aws_instances" "asg_instances" {
+  filter {
+    name   = "tag:aws:autoscaling:groupName"
+    values = [data.aws_autoscaling_group.eks_node_group.name]
+  }
+}
+
+# Output the EC2 instance IDs from the ASG
+output "node_group_instance_ids" {
+  description = "The EC2 instance IDs of the EKS node group"
+  value       = data.aws_instances.asg_instances.ids
+}
+
+
 module "load_balancer" {
   source               = "../modules/load_balancer"
   vpc_id               = module.vpc.vpc_id
   public_subnet_ids    = module.subnets.public_subnet_ids
   lb_name              = var.lb_name
-  lb_security_group_id = module.security_groups.web_security_group_id
+  lb_security_group_id = module.lb_security_group.security_group_id 
   target_group_name    = var.target_group_name
-  private_instance_ids = module.eks.node_group_instance_ids
+  private_instance_ids = data.aws_instances.asg_instances.ids
 }

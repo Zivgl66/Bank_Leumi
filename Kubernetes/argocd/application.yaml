@@ -12,7 +12,7 @@ spec:
     directory:
       recurse: true
   destination:
-    server: https://710986295EBDFD603F7E9E5206FA3899.gr7.us-east-1.eks.amazonaws.com
+    server: https://A60A129371A3364B1A69379E7F570A6A.gr7.us-east-1.eks.amazonaws.com
     namespace: python-app
   syncPolicy:
     syncOptions:

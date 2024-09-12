@@ -41,8 +41,8 @@ resource "aws_lb_listener" "tcp" {
 }
 
 resource "aws_lb_target_group_attachment" "private_instance_attachment" {
-  count            = length(var.private_instance_ids)
+  for_each         = { for idx, instance_id in var.private_instance_ids : idx => instance_id }
   target_group_arn = aws_lb_target_group.private_targets.arn
-  target_id        = element(var.private_instance_ids, count.index)
+  target_id        = each.value
   port             = 80
 }
