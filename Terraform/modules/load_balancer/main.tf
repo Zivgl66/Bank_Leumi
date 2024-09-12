@@ -12,17 +12,17 @@ resource "aws_lb" "application_lb" {
 
 resource "aws_lb_target_group" "private_targets" {
   name     = var.target_group_name
-  port     = 80
+  port     = 31263
   protocol = "TCP"
   vpc_id   = var.vpc_id
 
   health_check {
-    protocol            = "HTTP"
+    protocol            = "TCP"
     interval            = 30
     path                = "/"
     timeout             = 5
-    unhealthy_threshold = 2
-    healthy_threshold   = 5
+    unhealthy_threshold = 3
+    healthy_threshold   = 3
   }
 
   tags = {

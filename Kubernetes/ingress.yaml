@@ -1,25 +1,25 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: python-app-ingress
-  namespace: python-app
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTP" # the app is not working with https so it converts https -> http
-spec:
-  ingressClassName: nginx
-  tls:
-    - hosts:
-      secretName: python-app-tls
-  rules:
-    - host:
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: python-app-service
-                port:
-                  number: 3333
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: python-app-ingress
+#   namespace: python-app
+#   annotations:
+#     nginx.ingress.kubernetes.io/rewrite-target: /
+#     nginx.ingress.kubernetes.io/ssl-redirect: "true"
+#     nginx.ingress.kubernetes.io/backend-protocol: "HTTP" # the app is not working with https so it converts https -> http
+# spec:
+#   ingressClassName: nginx
+#   tls:
+#     - hosts:
+#       secretName: python-app-tls
+#   rules:
+#     - host:
+#       http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: python-app-service
+#                 port:
+#                   number: 3333
