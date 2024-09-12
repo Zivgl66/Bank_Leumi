@@ -1,6 +1,9 @@
 # Bank Leumi
 
-This repository contains the code for the Bank Leumi project, designed to implement and manage banking operations using a cloud infrastructure with a focus on security, scalability, and automation.
+This repository contains the code for the Bank Leumi project, designed to implement and manage python app using a cloud infrastructure with a focus on security, scalability, and automation.
+
+The repo for the python app:
+https://github.com/Zivgl66/example-python-web-app
 
 ## Table of Contents
 
@@ -15,7 +18,7 @@ This repository contains the code for the Bank Leumi project, designed to implem
 
 ## Project Overview
 
-The Bank Leumi project simulates a banking system with a cloud-based infrastructure. This project focuses on creating an efficient and secure environment for managing banking services. The repository is organized to facilitate easy deployment, management, and scaling of services using best DevOps practices.
+The Bank Leumi project simulates a web app with a cloud-based infrastructure. This project focuses on creating an efficient and secure environment for managing applications. The repository is organized to facilitate easy deployment, management, and scaling of services using best DevOps practices.
 
 ## Components
 
