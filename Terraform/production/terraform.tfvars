@@ -40,3 +40,4 @@ node_group_name          = "prod-eks-node-group"
 lb_sg_name = "prod-lb-sg"
 lb_name                = "prod-application-lb"
 target_group_name      = "prod-target-group" 
+create_load_balancer = false

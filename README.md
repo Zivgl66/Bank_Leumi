@@ -10,7 +10,7 @@ https://github.com/Zivgl66/example-python-web-app
 1. [Project Overview](#project-overview)
 2. [Components](#components)
 3. [Infrastructure Setup](#infrastructure-setup)
-4. [Deployment](#deployment)
+4. [Troubleshoot](#troubleshoot)
 5. [Usage](#usage)
 6. [Technologies Used](#technologies-used)
 7. [Contributing](#contributing)
@@ -43,48 +43,106 @@ This project includes several core components:
 
 ## Infrastructure Setup
 
-To set up the infrastructure:
+### 1. Deploy Supply Chain in Development Workspace
 
-1. Clone this repository:
+To set up the supply chain infrastructure in the development environment:
 
-   ```bash
-   git clone https://github.com/Zivgl66/Bank_Leumi.git
-   cd Bank_Leumi
-   ```
+```bash
+cd Terraform/
+terraform init
+terraform workspace new development
+terraform workspace select development
+terraform apply -var-file="./supply_chain/terraform.tfvars"
+```
 
-2. Ensure you have Terraform installed and configured. Run the following to initialize and apply the infrastructure:
+This will deploy the necessary resources for the development environment.
 
-   ```bash
-   terraform init
-   terraform apply
-   ```
+### 2. Deploy Production Workspace (Without Load Balancer Module)
 
-3. Terraform will provision the AWS infrastructure, including an EKS cluster and deploying ArgoCD.
+To deploy the production environment, excluding the load balancer:
 
-4. Before applying the `application.yaml` for ArgoCD, **update the `destination.server` field** in the `application.yaml` file to the DNS of your EKS cluster. The section to update looks like this:
+```bash
+terraform workspace new production
+terraform workspace select production
+terraform apply -var-file="./production/terraform.tfvars"
+```
 
-   ```yaml
-   destination:
-     server: https://<your-cluster-dns>
-   ```
+> **Note**: The EC2 instance in the production environment will have Apache2 installed and can only be accessed from the Bank Leumi IP `91.231.246.50`.
 
-   Replace `<your-cluster-dns>` with the actual DNS endpoint for your EKS cluster.
+### 3. Deploy Load Balancer Module
 
-   Once this is done, apply the `application.yaml`:
+Once the production resources are up, you can deploy the load balancer module:
 
-   ```bash
-   kubectl apply -f application.yaml
-   ```
+```bash
+terraform apply -target=module.load_balancer -var="create_load_balancer=true"
+```
 
-   > **Note**: Ensure you have set the correct context for your EKS cluster using the following command:
+### 4. Terraform will provision the AWS infrastructure, including an EKS cluster and install ArgoCD (running the k8s manifests).
 
-   ```bash
-   aws eks --region <region> update-kubeconfig --name <cluster_name>
-   ```
+- Before applying the `application.yaml` for ArgoCD, **update the `destination.server` field** in the `application.yaml` file to the DNS of your EKS cluster. The section to update looks like this:
 
-## Deployment
+```yaml
+destination:
+  server: https://<your-cluster-dns>
+```
 
-Deployment is done automatically by ArgoCD.
+Replace `<your-cluster-dns>` with the actual DNS endpoint for your EKS cluster.
+
+Once this is done, apply the `application.yaml`:
+
+```bash
+kubectl apply -f application.yaml
+```
+
+> **Note**: Ensure you have set the correct context for your EKS cluster using the following command:
+
+```bash
+aws eks --region <region> update-kubeconfig --name <cluster_name>
+```
+
+## Troubleshoot
+
+### 1. If the cluster in not connected properly to argocd, use context to connect it:
+
+```basah
+kubectl config get-contexts
+argocd cluster add <your-eks-context>
+argocd cluster list
+```
+
+### 2. Install nginx ingress controller:
+
+```basah
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/aws/deploy.yaml
+```
+
+### 3. Using HTTPS requires a tls certificate:
+
+- Create an a tls certificate locally:
+
+```bash
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=example.com/O=example"
+kubectl create secret tls flask-tls --cert=tls.crt --key=tls.key -n python-app
+```
+
+- Apply the service for the python app and the ingress manifests:
+
+```bash
+kubectl apply -f app-service.yaml
+kubectl apply -f ingress.yaml
+```
+
+- For any problem, check the ingress logs:
+
+```bash
+kubectl logs -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx
+kubectl get ingress -n python-app
+kubectl describe ingress python-app-ingress -n python-app
+kubectl get service python-app-service -n python-app
+kubectl describe service python-app-service -n python-app
+kubectl get pods -n python-app --show-labels
+kubectl get ingressclass
+```
 
 ## Usage
 

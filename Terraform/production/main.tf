@@ -159,4 +159,7 @@ module "load_balancer" {
   lb_security_group_id = module.lb_security_group.security_group_id 
   target_group_name    = var.target_group_name
   private_instance_ids = data.aws_instances.asg_instances.ids
+
+  count = var.create_load_balancer ? 1 : 0
+
 }
