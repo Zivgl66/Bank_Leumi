@@ -150,6 +150,8 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt
 kubectl create secret tls flask-tls --cert=tls.crt --key=tls.key -n python-app
 ```
 
+- It can be stored in AWS Secrets manager
+
 - Apply the service for the python app and the ingress manifests:
 
 ```bash
