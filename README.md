@@ -13,8 +13,6 @@ https://github.com/Zivgl66/example-python-web-app
 4. [Troubleshoot](#troubleshoot)
 5. [Usage](#usage)
 6. [Technologies Used](#technologies-used)
-7. [Contributing](#contributing)
-8. [License](#license)
 
 ## Project Overview
 
@@ -189,16 +187,9 @@ You can interact with the API via standard HTTP methods (`GET`, `POST`, etc.) fo
 
 - **Python**: Backend application
 - **Flask**: Micro web framework
+- **Docker**: Container platform.
 - **Kubernetes**: Container orchestration
 - **Terraform**: Infrastructure as Code (IaC) tool for managing cloud infrastructure
 - **ArgoCD**: Continuous deployment tool, installed via Terraform
 - **AWS EKS**: Managed Kubernetes service on AWS
 - **Jenkins**: Continuous Integration/Continuous Deployment pipelines
-
-## Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request if you have suggestions for improvements or new features.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
