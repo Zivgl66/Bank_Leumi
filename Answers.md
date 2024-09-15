@@ -1,76 +1,70 @@
-# Answers to the question 2 - 4
+# Answers
 
 ## Question 2a:
 
-The TEST EC2 machine fails to resolve DNS for internet addresses. What are the points of failure to examine?
-
-- **VPC DNS Settings**: Verify if the VPC where the TEST EC2 resides has DNS resolution and DNS hostnames enabled.
-- **NAT Gateway**: Ensure that the NAT Gateway in the EGRESS VPC is properly configured to allow DNS traffic (port 53).
-- **NFW (Network Firewall)**: Check if the firewall allows outbound DNS traffic (UDP/TCP port 53).
-- **Route to DEV Transit Gateway (TGW)**: Confirm that the TEST Spoke VPC has a route to the DEV TGW, which can forward DNS queries to the internet.
-- **Transit Gateway Association**: Verify that the TGW associations and routing tables are configured to allow DNS traffic between the TEST Spoke VPC and the EGRESS VPC (or internet via NAT Gateway).
-- **DNS Server Configuration on EC2**: Check that the DNS server settings on the TEST EC2 instance are correct and point to valid DNS servers (such as Amazon-provided DNS or custom DNS).
+- **VPC DNS Settings**: First, I'd check the VPC settings to ensure that DNS resolution and DNS hostnames are enabled in the VPC where the EC2 instance is located.
+- **NAT Gateway Configuration**: I'd confirm that the NAT Gateway in the EGRESS VPC is correctly set up to allow DNS traffic over port 53.
+- **Network Firewall (NFW)**: I'd also check the firewall rules to make sure DNS traffic (UDP/TCP on port 53) is allowed outbound.
+- **Route to Transit Gateway**: It's important to ensure that the TEST Spoke VPC has a route to the DEV Transit Gateway, which is responsible for forwarding DNS queries to the internet.
+- **Transit Gateway Associations**: I'd verify that the Transit Gateway associations and routing tables are properly configured to allow DNS traffic between the TEST Spoke VPC and the EGRESS VPC (or NAT Gateway for internet access).
+- **EC2 DNS Configuration**: Finally, I'd look at the DNS settings on the TEST EC2 instance itself, ensuring it’s pointing to valid DNS servers (like Amazon's default DNS or a custom one).
 
 ## Question 2b:
 
-he TEST EC2 machine receives DNS address translation but fails to communicate with the Internet. What could be the source of the problem?
-
-- **NAT Gateway Configuration**: The EC2 instance might be able to resolve DNS addresses, but without a properly configured NAT Gateway in the EGRESS - VPC, it will not be able to establish outbound connections.
-- Network Firewall Rules: Ensure that the NFW in the EGRESS VPC is allowing the relevant outbound traffic (e.g., HTTP/HTTPS traffic on port 80 and 443).
-- **Route Table Configuration**: Double-check the route tables in both the TEST Spoke VPC and EGRESS VPC. Make sure that traffic destined for the internet is correctly routed through the DEV TGW and to the NAT Gateway.
-- **Security Groups/Network ACLs**: Verify that the security groups and NACLs associated with the TEST EC2 and NAT Gateway are configured to allow outbound internet traffic.
-- **EC2 Instance Security Group**: Ensure that the security group attached to the TEST EC2 allows outbound access to ports 80 (HTTP) and 443 (HTTPS).
+- **NAT Gateway Issues**: One possibility is that while DNS is resolving, the NAT Gateway in the EGRESS VPC isn't properly configured, preventing the EC2 from making outbound connections.
+- **Firewall Rules**: I'd verify that the Network Firewall in the EGRESS VPC is allowing outbound traffic, specifically HTTP/HTTPS on ports 80 and 443.
+- **Route Tables**: Another area to double-check would be the route tables in both the TEST Spoke and EGRESS VPCs. Traffic to the internet should route through the DEV TGW and the NAT Gateway correctly.
+- **Security Groups and Network ACLs**: I’d also verify that both the security groups and NACLs for the EC2 instance and NAT Gateway allow outbound traffic to the internet.
+- **Security Group on EC2**: Lastly, the security group attached to the EC2 instance should allow outbound traffic on ports 80 (HTTP) and 443 (HTTPS).
 
 ## Question 2c:
 
-On the TEST EC2 machine, Docker engine is installed. Its repository is in the ALM Spoke VPC on the Nexus repo machine. What would you check for the following errors?
+1. **Error 1: Pull Access Denied**
 
-1.  Error 1: Pull access denied
-    Docker Credentials: Ensure that the credentials to access the Nexus repository are correct and provided in Docker's configuration on the TEST EC2 instance.
-    Repository Permissions: Verify that the Nexus repository has appropriate permissions to allow the TEST EC2 to pull images from it.
-    DNS Resolution: Ensure that the Nexus EC2 in the ALM Spoke VPC is reachable via DNS or its IP address from the TEST EC2 instance.
+   - I'd start by checking the Docker credentials configured on the EC2 instance to ensure they have the correct access to the Nexus repository.
+   - I’d also confirm that the Nexus repository has the appropriate permissions to allow the EC2 instance to pull images.
+   - DNS resolution would be another thing to verify, ensuring that the Nexus EC2 in the ALM Spoke VPC is reachable from the TEST EC2, either by DNS or IP address.
 
-2.  Error 2: Container pull timeout
-    Network Connectivity: Check if there is any network issue between the TEST EC2 and the Nexus EC2 instance in the ALM Spoke VPC (e.g., route issues, security groups, or NACLs blocking traffic).
-    Nexus Repo Health: Verify if the Nexus repository service is running properly and not facing high latency or timeouts.
-    Bandwidth/Throughput Limits: Ensure there are no bandwidth limitations that might be causing the connection to timeout.
+2. **Error 2: Container Pull Timeout**
 
-3.  Error 3: Docker daemon is not running
-    Docker Daemon: Check whether the Docker daemon is running on the TEST EC2 machine by running sudo systemctl status docker.
-    Docker Logs: Review Docker logs (/var/log/docker.log) for any errors or crashes.
-    Docker Installation: Verify that Docker is installed correctly by running docker --version and restarting the Docker service using sudo systemctl start docker.
+   - I'd first check network connectivity between the EC2 instance and the Nexus repo, ensuring there are no route issues, security group misconfigurations, or NACLs blocking traffic.
+   - I'd also check the health of the Nexus repository to make sure it’s functioning properly and not experiencing latency or timeouts.
+   - Lastly, I'd verify there aren’t any bandwidth limits or other factors affecting the connection between the two.
+
+3. **Error 3: Docker Daemon Not Running**
+   - I’d start by confirming whether the Docker daemon is running on the EC2 instance by running `sudo systemctl status docker`.
+   - Checking the Docker logs (`/var/log/docker.log`) for any errors or crashes would be next.
+   - Finally, I'd make sure Docker is installed correctly by running `docker --version` and restart the service if needed with `sudo systemctl start docker`.
 
 ## Question 3:
 
-Externalizing a service to the Internet based on a DNS record and referencing the TEST EC2 machine. When accessing from the outside, you get the public address of the machine but are unable to surf the service in HTTPS. What would you check?
-
-- **Security Groups**: Ensure the security group attached to the TEST EC2 instance allows inbound traffic on port 443 (HTTPS).
-- **NAT Gateway and Routing**: Verify that the NAT Gateway and route tables are configured to route inbound HTTPS traffic from the internet to the EC2 instance.
-- **Network Firewall (NFW) Rules**: Check if the NFW allows inbound HTTPS traffic from the internet.
-- **TLS/SSL Certificates**: Ensure that the HTTPS service on the TEST EC2 machine has valid SSL certificates installed.
-- **Web Server Configuration**: Confirm that the web server (e.g., Nginx, Apache) on the TEST EC2 is configured correctly to serve traffic over HTTPS.
-- **DNS Record**: Ensure that the DNS record points to the correct public IP of the TEST EC2 machine.
+- **Security Group Configuration**: I'd ensure that the security group attached to the EC2 instance is allowing inbound traffic on port 443 (HTTPS).
+- **NAT Gateway and Routing**: I’d verify that the NAT Gateway and route tables are properly routing inbound HTTPS traffic from the internet to the EC2 instance.
+- **Firewall Rules**: The Network Firewall rules should be checked to confirm they allow inbound HTTPS traffic.
+- **SSL/TLS Certificates**: I’d also make sure that the HTTPS service on the EC2 instance has valid SSL certificates installed and configured.
+- **Web Server Settings**: I’d verify that the web server (e.g., Nginx, Apache) is set up correctly to handle HTTPS traffic.
+- **DNS Record Accuracy**: Finally, I'd confirm that the DNS record points to the correct public IP address of the EC2 instance.
 
 ## Question 4:
 
-When trying to telnet from the TEST EC2 machine, an error is received that this software is missing. How will you install it on Amazon Linux 2? What could be the cause of its installation failure, what repo and with what command would you solve it?
+- **Installing Telnet**: To install telnet on Amazon Linux 2, I would run:
 
-Installation:
-To install telnet on Amazon Linux 2, run the following command:
+  ```
+  sudo yum install telnet -y
+  ```
 
-```
-sudo yum install telnet -y
-```
+- **Possible Installation Failures**:
 
-Possible Causes of Installation Failure:
-Yum Repository Unavailable: If the yum package manager cannot access repositories, check network connectivity and DNS resolution on the TEST EC2 machine.
-Repository Misconfiguration: If the Amazon Linux 2 repositories are not correctly configured, check the /etc/yum.repos.d/ directory for the correct repo configuration.
-Resolving Repo Issues:
-To re-enable or update the repository, you can use the following command to install and enable necessary repositories:
+  - If the installation fails, one possibility could be that the `yum` repository is unavailable due to network connectivity issues or DNS resolution problems.
+  - Another potential cause could be a misconfigured repository. I’d check the repo configuration files under `/etc/yum.repos.d/`.
 
-```
-sudo yum install -y amazon-linux-extras
-sudo amazon-linux-extras enable epel
-```
+- **Fixing Repo Issues**:
 
-If the issue persists, ensure the EC2 instance can reach the appropriate repository URLs by verifying its internet connectivity and route configurations.
+  - To fix repository issues, I would first install and enable the necessary repositories with:
+
+    ```
+    sudo yum install -y amazon-linux-extras
+    sudo amazon-linux-extras enable epel
+    ```
+
+  - If the issue persists, I’d check the EC2 instance's internet connectivity and routing setup to ensure it can reach the correct repositories.
