@@ -183,6 +183,43 @@ Replace `<your-load-balancer-dns>` with the DNS or IP assigned to your AWS LB se
 
 You can interact with the API via standard HTTP methods (`GET`, `POST`, etc.) for different banking operations.
 
+- Scripts Usage:
+
+**docker_aws_installation.sh Script**
+
+Installs Docker on the EC2 instance.
+Configures Docker to start on boot.
+Installs the AWS CLI to enable communication with AWS services like ECR.
+Configures Docker to work with AWS ECR, allowing you to push and pull Docker images.
+How to Use:
+
+1. SSH into your EC2 instance.
+2. Run the script:
+
+```bash
+./scripts/docker_aws_installation.sh
+```
+
+**jenkins_installation.sh Script**
+
+Installs Jenkins on an EC2 instance.
+Configures Jenkins to run as a service, ensuring it starts automatically on boot.
+Installs required Java dependencies needed to run Jenkins.
+Opens the necessary ports for Jenkins access (port 8080).
+Enables the Jenkins service.
+How to Use:
+
+1. SSH into your EC2 instance.
+2. Run the script:
+
+```bash
+
+./scripts/jenkins_installation.sh
+```
+
+3. After the script completes, you can access Jenkins by navigating to http://<your-ec2-public-ip>:8080 in your browser.
+4. Follow the on-screen instructions to complete the initial Jenkins setup by using the administrator password stored at /var/lib/jenkins/secrets/initialAdminPassword.
+
 ## Technologies Used
 
 - **Python**: Backend application
