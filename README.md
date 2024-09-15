@@ -18,7 +18,7 @@ https://github.com/Zivgl66/example-python-web-app
 
 The Bank Leumi project simulates a web app with a cloud-based infrastructure. This project focuses on creating an efficient and secure environment for managing applications. The repository is organized to facilitate easy deployment, management, and scaling of services using best DevOps practices.
 
-![Architecture Diagram](https://i.ibb.co/L0wMpLX/UML-diagrams.png)
+![Architecture Diagram](https://i.ibb.co/bv88GxB/UML-diagrams-1.png)
 
 ## Components
 
