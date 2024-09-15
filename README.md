@@ -43,6 +43,31 @@ This project includes several core components:
 
 ## Infrastructure Setup
 
+### Backend setup for Terraform Overview
+
+- **S3 Bucket**: Used to store the Terraform state files securely. Storing the state in S3 allows for better collaboration and state management across multiple environments and team members.
+- **DynamoDB Table**: DynamoDB is used to implement state locking, ensuring that only one Terraform operation can run at a time, preventing potential conflicts or corruption of the state file.
+
+### How to Use
+
+Before running any Terraform commands, the backend infrastructure must be provisioned. This is usually a one-time setup.
+
+1. Navigate to the `tfbackend` folder:
+
+   ```bash
+   cd Terraform/tfbackend
+   ```
+
+2. Initialize and apply the Terraform configuration to create the S3 bucket and DynamoDB table:
+
+   ```bash
+   terraform init
+   terraform plan
+   terraform apply
+   ```
+
+3. Once this infrastructure is in place, update your main Terraform configuration to point to the S3 bucket and DynamoDB table for state storage and locking.
+
 ### 1. Deploy Supply Chain in Development Workspace
 
 To set up the supply chain infrastructure in the development environment:
@@ -149,10 +174,10 @@ kubectl get ingressclass
 After deployment, the Python Flask application will be accessible at:
 
 ```
-https://<your-service-url>:443
+https://<your-load-balancer-dns>:443
 ```
 
-Replace `<your-service-url>` with the DNS or IP assigned to your Kubernetes service.
+Replace `<your-load-balancer-dns>` with the DNS or IP assigned to your AWS LB service.
 
 You can interact with the API via standard HTTP methods (`GET`, `POST`, etc.) for different banking operations.
 
@@ -164,7 +189,7 @@ You can interact with the API via standard HTTP methods (`GET`, `POST`, etc.) fo
 - **Terraform**: Infrastructure as Code (IaC) tool for managing cloud infrastructure
 - **ArgoCD**: Continuous deployment tool, installed via Terraform
 - **AWS EKS**: Managed Kubernetes service on AWS
-- **Jenkins/CircleCI**: Continuous Integration/Continuous Deployment pipelines
+- **Jenkins**: Continuous Integration/Continuous Deployment pipelines
 
 ## Contributing
 
