@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: py-app-container
-          image: 107895200189.dkr.ecr.us-east-1.amazonaws.com/zivgl66/pythonapp:25
+          image: 107895200189.dkr.ecr.us-east-1.amazonaws.com/zivgl66/pythonapp:26
           ports:
             - containerPort: 3333
