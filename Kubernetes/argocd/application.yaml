@@ -12,7 +12,7 @@ spec:
     directory:
       recurse: true
   destination:
-    server: https://3A1D546BE72AF613C36F91026E774D07.gr7.us-east-1.eks.amazonaws.com
+    server: 'https://kubernetes.default.svc'
     namespace: python-app
   syncPolicy:
     syncOptions:
